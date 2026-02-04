@@ -17,6 +17,21 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const heartsContainerRef = useRef<HTMLDivElement>(null);
 
+  // Array of romantic quotes
+  const quotes = [
+    { text: "Love is composed of a single soul inhabiting two bodies.", author: "Aristotle" },
+    { text: "The best thing to hold onto in life is each other.", author: "Audrey Hepburn" },
+    { text: "You are my today and all of my tomorrows.", author: "Leo Christopher" },
+    { text: "In all the world, there is no heart for me like yours.", author: "Maya Angelou" },
+    { text: "I have found the one whom my soul loves.", author: "Song of Solomon" },
+    { text: "Love is not just looking at each other, it's looking in the same direction.", author: "Antoine de Saint-Exupéry" },
+    { text: "Every love story is beautiful, but ours is my favorite.", author: "Unknown" },
+    { text: "You are my sun, my moon, and all my stars.", author: "E.E. Cummings" },
+  ];
+
+  // Select a random quote on component mount
+  const [currentQuote] = useState(() => quotes[Math.floor(Math.random() * quotes.length)]);
+
   useGSAP(() => {
     // Entrance animations for the form elements
     const tl = gsap.timeline();
@@ -164,6 +179,16 @@ export default function Home() {
             </h1>
             <p className="text-gray-600 text-lg">
               Something special awaits... 💕
+            </p>
+          </div>
+
+          {/* Romantic Quote */}
+          <div className="animate-target-header mb-8 bg-gradient-to-r from-pink-50/50 to-red-50/50 rounded-2xl p-6 border border-pink-100">
+            <p className="text-lg md:text-xl italic text-gray-700 mb-2 leading-relaxed font-serif text-center">
+              "{currentQuote.text}"
+            </p>
+            <p className="text-xs text-gray-400 font-bold tracking-widest uppercase text-center">
+              - {currentQuote.author} -
             </p>
           </div>
 

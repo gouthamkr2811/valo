@@ -12,6 +12,21 @@ export default function ProposalPage() {
     const [mounted, setMounted] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // Array of romantic quotes for proposal
+    const quotes = [
+        { text: "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine.", author: "Maya Angelou" },
+        { text: "I love you not only for what you are, but for what I am when I am with you.", author: "Roy Croft" },
+        { text: "You are my heart, my life, my one and only thought.", author: "Arthur Conan Doyle" },
+        { text: "I would rather share one lifetime with you than face all the ages of this world alone.", author: "J.R.R. Tolkien" },
+        { text: "When I saw you I fell in love, and you smiled because you knew.", author: "Arrigo Boito" },
+        { text: "I am who I am because of you. You are every reason, every hope, and every dream I've ever had.", author: "Nicholas Sparks" },
+        { text: "To love and be loved is to feel the sun from both sides.", author: "David Viscott" },
+        { text: "My soul and your soul are forever tangled.", author: "N.R. Hart" },
+    ];
+
+    // Select a random quote on component mount
+    const [currentQuote] = useState(() => quotes[Math.floor(Math.random() * quotes.length)]);
+
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -27,18 +42,12 @@ export default function ProposalPage() {
             duration: 1.2,
             ease: "back.out(1.7)",
         })
-            .from(".animate-target-photo", {
-                y: 50,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.out",
-            }, "-=0.5")
             .from(".animate-target-quote", {
                 opacity: 0,
                 y: 20,
                 duration: 0.8,
                 ease: "power2.out",
-            }, "-=0.3")
+            }, "-=0.5")
             .from(".animate-target-message", {
                 opacity: 0,
                 scale: 0.9,
@@ -88,14 +97,7 @@ export default function ProposalPage() {
             });
         });
 
-        // Continuous pulse for the photo
-        gsap.to(".animate-target-photo", {
-            scale: 1.05,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
+
 
     }, { scope: containerRef }); // Removed dependencies: [mounted] and if (!mounted) return
 
@@ -127,24 +129,13 @@ export default function ProposalPage() {
 
             <div className="max-w-2xl w-full relative z-10">
                 <div className="animate-target-card bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-12 border border-white/20">
-                    {/* Image Section */}
-                    <div className="animate-target-photo flex justify-center mb-8">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-red-400 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                            <img
-                                src={userData.photo || "https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=Your+Photo"}
-                                alt="Valentine"
-                                className="relative w-48 h-48 rounded-full object-cover border-8 border-white shadow-2xl"
-                            />
-                        </div>
-                    </div>
 
                     {/* Romantic Quote */}
                     <div className="animate-target-quote text-center mb-8">
                         <p className="text-2xl md:text-3xl italic text-gray-700 mb-4 font-serif leading-relaxed">
-                            "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine."
+                            "{currentQuote.text}"
                         </p>
-                        <p className="text-sm text-gray-400 tracking-widest uppercase">- Maya Angelou -</p>
+                        <p className="text-sm text-gray-400 tracking-widest uppercase">- {currentQuote.author} -</p>
                     </div>
 
                     {/* Main Message */}

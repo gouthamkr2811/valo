@@ -142,9 +142,8 @@ export default function QuizPage() {
     const handleNext = () => {
         if (selectedAnswer === null) return;
 
-        if (selectedAnswer === quizQuestions[currentQuestion].correctAnswer) {
-            setScore(score + 1);
-        }
+        // Always increment score - every answer is correct in love! 💕
+        setScore(score + 1);
 
         if (currentQuestion < quizQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
@@ -155,7 +154,8 @@ export default function QuizPage() {
     };
 
     const handleFinish = () => {
-        saveUserData({ quizScore: score });
+        // Always save perfect score of 5
+        saveUserData({ quizScore: 5 });
         router.push("/final");
     };
 
