@@ -16,7 +16,30 @@ const dancingScript = Dancing_Script({
 
 export const metadata: Metadata = {
   title: "Will You Be My Valentine? ❤️",
-  description: "A special Valentine's Day surprise",
+  description: "A special Valentine's Day surprise filled with love, romance, and heartfelt moments",
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
+  openGraph: {
+    title: "Will You Be My Valentine? ❤️",
+    description: "A special Valentine's Day surprise filled with love, romance, and heartfelt moments",
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: "Valentine's Day - Share the Love",
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Will You Be My Valentine? ❤️",
+    description: "A special Valentine's Day surprise filled with love, romance, and heartfelt moments",
+    images: ['/og-image.png'],
+  },
 };
 
 export default function RootLayout({
