@@ -1,8 +1,8 @@
 import { db } from './firebase';
-import { collection, addDoc, getDocs, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, Timestamp, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 export interface UserSubmission {
-    id?: string;
+    id: string; // id is mandatory for existing items
     name: string;
     photoURL: string;
     quizScore?: number; // Score out of 100 (5 questions × 20 points)
@@ -55,5 +55,35 @@ export async function getAllUsers(): Promise<UserSubmission[]> {
     } catch (error) {
         console.error('Error getting users:', error);
         throw new Error('Failed to fetch user data');
+    }
+}
+
+/**
+ * Delete a user submission from Firestore
+ * @param id - Document ID
+ */
+export async function deleteUser(id: string): Promise<void> {
+    try {
+        await deleteDoc(doc(db, 'valentine-submissions', id));
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        throw new Error('Failed to delete user');
+    }
+}
+
+/**
+ * Update a user's quiz score in Firestore
+ * @param id - Document ID
+ * @param score - New quiz score
+ */
+export async function updateUserScore(id: string, score: number): Promise<void> {
+    try {
+        const userRef = doc(db, 'valentine-submissions', id);
+        await updateDoc(userRef, {
+            quizScore: score
+        });
+    } catch (error) {
+        console.error('Error updating user score:', error);
+        throw new Error('Failed to update score');
     }
 }

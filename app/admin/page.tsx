@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllUsers, UserSubmission } from "../../lib/userService";
+import { getAllUsers, UserSubmission, deleteUser, updateUserScore } from "../../lib/userService";
 
 export default function AdminPage() {
     const [users, setUsers] = useState<UserSubmission[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editScore, setEditScore] = useState<number>(0);
 
     useEffect(() => {
         loadUsers();
@@ -29,6 +31,32 @@ export default function AdminPage() {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this submission? 💔")) return;
+
+        try {
+            await deleteUser(id);
+            setUsers(users.filter(u => u.id !== id));
+        } catch (err: any) {
+            alert(`Error deleting: ${err.message}`);
+        }
+    };
+
+    const startEditing = (user: UserSubmission) => {
+        setEditingId(user.id);
+        setEditScore(user.quizScore || 0);
+    };
+
+    const handleUpdateScore = async (id: string) => {
+        try {
+            await updateUserScore(id, editScore);
+            setUsers(users.map(u => u.id === id ? { ...u, quizScore: editScore } : u));
+            setEditingId(null);
+        } catch (err: any) {
+            alert(`Error updating: ${err.message}`);
+        }
+    };
+
     const filteredUsers = users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -47,7 +75,7 @@ export default function AdminPage() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
                             <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-red-500 mb-2">
-                                Valentine's Submissions 💕
+                                Admin Dashboard 💕
                             </h1>
                             <p className="text-gray-600">
                                 Total submissions: <span className="font-bold text-pink-600">{users.length}</span>
@@ -102,8 +130,19 @@ export default function AdminPage() {
                             filteredUsers.map((user) => (
                                 <div
                                     key={user.id}
-                                    className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all transform hover:scale-105"
+                                    className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all transform hover:scale-[1.02] flex flex-col h-full"
                                 >
+                                    {/* Action Buttons */}
+                                    <div className="flex justify-end gap-2 mb-4">
+                                        <button
+                                            onClick={() => handleDelete(user.id)}
+                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete Submission"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+
                                     {/* Photo */}
                                     <div className="flex justify-center mb-4">
                                         <div className="relative">
@@ -127,29 +166,63 @@ export default function AdminPage() {
                                         {user.name}
                                     </h3>
 
-                                    {/* Quiz Score */}
-                                    {user.quizScore !== undefined && (
-                                        <div className="text-center mb-2">
-                                            <div className="inline-block bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full font-bold text-lg">
-                                                Score: {user.quizScore}/5
-                                            </div>
+                                    {/* Quiz Score Display/Edit */}
+                                    <div className="mt-auto">
+                                        <div className="text-center mb-4">
+                                            {editingId === user.id ? (
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <input
+                                                        type="number"
+                                                        value={editScore}
+                                                        onChange={(e) => setEditScore(Number(e.target.value))}
+                                                        className="w-20 px-2 py-1 border-2 border-pink-300 rounded-lg text-center font-bold"
+                                                        min="0"
+                                                        max="5"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleUpdateScore(user.id)}
+                                                        className="bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 text-sm"
+                                                    >
+                                                        ✅
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingId(null)}
+                                                        className="bg-gray-400 text-white p-2 rounded-lg hover:bg-gray-500 text-sm"
+                                                    >
+                                                        ❌
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="group relative inline-block">
+                                                    <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full font-bold text-lg flex items-center gap-2">
+                                                        Score: {user.quizScore || 0}/5
+                                                        <button
+                                                            onClick={() => startEditing(user)}
+                                                            className="text-xs bg-white/20 hover:bg-white/40 p-1 rounded-md transition-colors"
+                                                            title="Edit Score"
+                                                        >
+                                                            ✏️
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
 
-                                    {/* Timestamp */}
-                                    <p className="text-sm text-gray-500 text-center">
-                                        {formatDate(user.timestamp)}
-                                    </p>
+                                        {/* Timestamp */}
+                                        <p className="text-xs text-gray-500 text-center italic">
+                                            {formatDate(user.timestamp)}
+                                        </p>
 
-                                    {/* Decorative Hearts */}
-                                    <div className="flex justify-center gap-2 mt-4 text-xl">
-                                        <span className="animate-heartbeat">💖</span>
-                                        <span className="animate-heartbeat" style={{ animationDelay: "0.2s" }}>
-                                            💕
-                                        </span>
-                                        <span className="animate-heartbeat" style={{ animationDelay: "0.4s" }}>
-                                            ❤️
-                                        </span>
+                                        {/* Decorative Hearts */}
+                                        <div className="flex justify-center gap-2 mt-4 text-xl">
+                                            <span className="animate-heartbeat">💖</span>
+                                            <span className="animate-heartbeat" style={{ animationDelay: "0.2s" }}>
+                                                💕
+                                            </span>
+                                            <span className="animate-heartbeat" style={{ animationDelay: "0.4s" }}>
+                                                ❤️
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             ))
