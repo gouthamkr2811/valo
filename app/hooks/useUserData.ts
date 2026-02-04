@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { updateUserScore } from "../../lib/userService";
 
 export interface UserData {
     name: string;
     photo?: string; // base64 encoded image
     quizScore?: number;
+    firebaseId?: string; // Store the Firebase document ID
 }
 
 export function useUserData() {
@@ -29,6 +31,13 @@ export function useUserData() {
         const newData = { ...userData, ...data };
         setUserData(newData);
         localStorage.setItem("valentineUserData", JSON.stringify(newData));
+
+        // If updating quiz score and we have a Firebase ID, update Firebase too
+        if (data.quizScore !== undefined && newData.firebaseId) {
+            updateUserScore(newData.firebaseId, data.quizScore).catch((error) => {
+                console.error("Failed to update quiz score in Firebase:", error);
+            });
+        }
     };
 
     const clearUserData = () => {

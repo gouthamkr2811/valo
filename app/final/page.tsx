@@ -151,7 +151,7 @@ export default function FinalPage() {
 
                     {/* Quiz Score Display */}
                     {userData.quizScore !== undefined && (
-                        <div className="  -final-stagger mb-10 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-pink-100">
+                        <div className="animate-final-stagger mb-10 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-pink-100">
                             <p className="text-lg text-gray-600">
                                 You scored <span className="text-pink-600 font-black text-3xl">{userData.quizScore}/5</span> in our quiz!
                                 <br />

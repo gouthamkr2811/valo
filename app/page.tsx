@@ -145,9 +145,12 @@ export default function Home() {
     saveUserData({ name: name.trim(), photo });
 
     try {
-      // Save to Firebase (setting score to 0 as quiz is removed)
-      await saveUserToFirebase(name.trim(), photo, 0);
-      console.log('Saved to Firebase successfully');
+      // Save to Firebase and get the document ID
+      const firebaseId = await saveUserToFirebase(name.trim(), photo, 0);
+      console.log('Saved to Firebase successfully with ID:', firebaseId);
+
+      // Save the Firebase ID to localStorage so we can update the quiz score later
+      saveUserData({ name: name.trim(), photo, firebaseId });
     } catch (err) {
       console.warn('Firebase save failed, continuing anyway:', err);
     }
